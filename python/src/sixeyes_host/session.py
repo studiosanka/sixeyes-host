@@ -46,6 +46,7 @@ class Arm:
         self._acks = {}
         self._state = None
         self._count = 0  # how many states have arrived
+        self._state_time = None  # time.monotonic() when the newest state arrived
         self._info = None
         self._running = True
         self._reader = threading.Thread(target=self._read_loop, daemon=True)
@@ -70,6 +71,15 @@ class Arm:
     def state(self) -> p.State:
         """The newest state from the arm, or None if none has arrived yet."""
         return self._state
+
+    @property
+    def state_age(self) -> float:
+        """Seconds since the newest state arrived (infinity if none has)."""
+        return float("inf") if self._state_time is None else time.monotonic() - self._state_time
+
+    @property
+    def link(self) -> Link:
+        return self._link
 
     def set_control(self, source):
         """Choose who moves the arm: 'usb' (this computer) or 'ble' (the phone)."""
@@ -185,6 +195,7 @@ class Arm:
             with self._cond:
                 self._state = msg
                 self._count += 1
+                self._state_time = time.monotonic()
                 self._cond.notify_all()
         elif isinstance(msg, p.HelloAck):
             self._info = msg

@@ -114,9 +114,9 @@ def list_ports():
 
 
 def open_link(target: str) -> Link:
-    """`sim`, `tcp:HOST:PORT`, or a serial port name such as COM3 or /dev/ttyACM0."""
-    if target == "sim":
-        return SimLink()
+    """`sim` (or `sim:SPEED` to run the pretend arm faster), `tcp:HOST:PORT`, or a serial port name such as COM3 or /dev/ttyACM0."""
+    if target == "sim" or target.startswith("sim:"):
+        return SimLink(speed=float(target.split(":")[1]) if ":" in target else 1.0)
     if target.startswith("tcp:"):
         _, host, port = target.split(":")
         return TcpLink(host, int(port))
