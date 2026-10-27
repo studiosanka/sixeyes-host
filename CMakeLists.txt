@@ -7,8 +7,11 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 option(SIXEYES_BUILD_TESTS "Build the C++ tests" ON)
 
-add_library(sixeyes_core STATIC core/src/codec.cpp core/src/serial.cpp core/src/c_api.cpp)
+find_package(Threads REQUIRED)
+
+add_library(sixeyes_core STATIC core/src/codec.cpp core/src/serial.cpp core/src/session.cpp core/src/c_api.cpp)
 target_include_directories(sixeyes_core PUBLIC core/include protocol/generated)
+target_link_libraries(sixeyes_core PUBLIC Threads::Threads)
 if(MSVC)
   target_compile_options(sixeyes_core PRIVATE /W4)
 else()
@@ -17,8 +20,13 @@ endif()
 
 if(SIXEYES_BUILD_TESTS)
   enable_testing()
+
   add_executable(test_codec core/tests/test_codec.cpp)
   target_link_libraries(test_codec PRIVATE sixeyes_core)
   target_include_directories(test_codec PRIVATE core/tests)
   add_test(NAME codec COMMAND test_codec)
+
+  add_executable(test_session core/tests/test_session.cpp)
+  target_link_libraries(test_session PRIVATE sixeyes_core)
+  add_test(NAME session COMMAND test_session)
 endif()

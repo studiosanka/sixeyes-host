@@ -6,17 +6,15 @@
 #include <memory>
 #include <string>
 
+#include "sixeyes/stream.hpp"
+
 namespace sixeyes {
 
-class SerialPort {
+class SerialPort : public ByteStream {
  public:
-  virtual ~SerialPort() = default;
+  ~SerialPort() override = default;
   // Opens e.g. "COM3" or "/dev/ttyACM0". On failure returns nullptr and fills `error`.
   static std::unique_ptr<SerialPort> open(const std::string &name, std::string &error);
-  // Returns the number of bytes written, or -1 on error.
-  virtual long write(const uint8_t *data, size_t n) = 0;
-  // Waits up to timeout_ms for data. Returns bytes read (0 = timeout), or -1 on error.
-  virtual long read(uint8_t *buf, size_t cap, int timeout_ms) = 0;
 };
 
 }  // namespace sixeyes

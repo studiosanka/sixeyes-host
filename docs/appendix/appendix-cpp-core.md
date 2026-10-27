@@ -6,6 +6,8 @@
 |---|---|
 | `codec.hpp/.cpp` | COBS, CRC-16, frame encode/decode, stream parser. Mirrors `python/.../codec.py` and `protocol/ts/codec.ts` |
 | `serial.hpp/.cpp` | USB serial port: Win32 (`CreateFile`, `COMMTIMEOUTS`) and POSIX (`termios`, `poll`) |
+| `stream.hpp` | `ByteStream`: anything bytes go to and come from (the serial port, or a fake in a test) |
+| `session.hpp/.cpp` | `Session`: handshake, commands that wait for their answer, the state stream, the heartbeat. Same rules as the Python `Arm`. Used by `sixeyes_ros2` |
 | `c_api.cpp` | `sixeyes_open`, `sixeyes_write_frame`, `sixeyes_read_frame`, ... |
 
 The generated header `protocol/generated/sixeyes_protocol.h` has the message structs and `pack`/`unpack` functions. The firmware can copy it.
@@ -18,10 +20,10 @@ cmake --build build
 ctest --test-dir build --output-on-failure
 ```
 
-The test (`core/tests/test_codec.cpp`) checks the same golden vectors as the Python and TypeScript tests, so all three agree byte for byte.
+Two tests run: `core/tests/test_codec.cpp` checks the same golden vectors as the Python and TypeScript tests, so all three agree byte for byte; `core/tests/test_session.cpp` runs the session against a scripted fake arm (handshake, version mismatch, refusals in plain words, streamed targets, heartbeat, timeouts).
 
 ## Status
 
 Written but **not yet compiled**: the machine it was written on had no C++ compiler. CI builds it on Windows, macOS and Linux. Treat the first CI run as the first real test.
 
-Not done yet: Python bindings to this library (the Python package is pure Python and works without it), and a session layer in C++ (handshake, state tracking). `sixeyes_ros2` will need that.
+Not done: Python bindings to this library (the Python package is pure Python and works without it).
