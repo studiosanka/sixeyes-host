@@ -95,6 +95,11 @@ class SimLink(Link):
         with self._lock:
             self.arm.usb_write(data)
 
+    def ble_write(self, data: bytes) -> None:
+        """Act as the phone: write bytes to the pretend arm's Bluetooth side (thread-safe)."""
+        with self._lock:
+            self.arm.ble_write(data)
+
     def read(self, timeout: float) -> bytes:
         try:
             return self._out.get(timeout=timeout)
