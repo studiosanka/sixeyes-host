@@ -85,7 +85,9 @@ class SimLink(Link):
             time.sleep(0.005)
             now = time.monotonic()
             with self._lock:
-                self.arm.tick(now - last, self._speed)
+                # If this thread was stalled (a busy computer), do not let the pretend arm's clock jump ahead:
+                # it would trip the watchdog before a heartbeat that is already on its way is read.
+                self.arm.tick(min(now - last, 0.05), self._speed)
                 data = self.arm.usb_read()
             last = now
             if data:
