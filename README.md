@@ -47,7 +47,7 @@ with Arm("sim") as arm:        # for a real arm use "COM3" (Windows) or "/dev/tt
 | Protocol description | ✅ written, version 1 ([protocol/PROTOCOL.md](protocol/PROTOCOL.md)) |
 | Python library, simulator, bring-up tool | ✅ works, tested on the simulator |
 | TypeScript codec (used by the phone page) | ✅ works, tested |
-| C++ core and session (for ROS 2) | 🚧 written, not compiled or tested yet (CI will) |
+| C++ core and session (for ROS 2) | ✅ builds and passes its tests in CI (Windows, macOS, Linux), against a fake arm |
 | Real arm | ⬜ firmware is written and passes its checks; not yet tried on a real arm |
 
 ## More

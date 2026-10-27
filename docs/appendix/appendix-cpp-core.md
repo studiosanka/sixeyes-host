@@ -24,6 +24,6 @@ Two tests run: `core/tests/test_codec.cpp` checks the same golden vectors as the
 
 ## Status
 
-Written but **not yet compiled**: the machine it was written on had no C++ compiler. CI builds it on Windows, macOS and Linux. Treat the first CI run as the first real test.
+Builds and passes its tests in CI on Windows, macOS and Linux, against a scripted fake arm. It has not talked to a real arm.
 
 Not done: Python bindings to this library (the Python package is pure Python and works without it).
