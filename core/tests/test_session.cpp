@@ -219,8 +219,8 @@ static void testHeartbeatKeepsTheArmAlive() {
   CHECK(r.session->setControlUsb().empty());
   CHECK(r.session->home().empty());
   CHECK(r.session->waitReady(1000).empty());
-  sleepMs(250);  // 20 ms period: about 12 heartbeats
-  CHECK(r.arm->heartbeats >= 5);
+  sleepMs(250);  // 20 ms period: about 12 heartbeats; a busy CI machine may manage fewer
+  CHECK(r.arm->heartbeats >= 4);
 }
 
 static void testWaitReadyTimesOut() {

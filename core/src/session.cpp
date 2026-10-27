@@ -45,7 +45,10 @@ void Session::ioLoop() {
       std::lock_guard<std::mutex> lock(mutex_);
       if (!running_) return;
     }
-    const long n = stream_->read(buf, sizeof(buf), 20);
+    // Wake up in time for the next heartbeat, so the beat is not late by a whole read timeout.
+    const auto since_beat = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - last_beat).count();
+    const int wait_ms = static_cast<int>(std::max<long long>(1, std::min<long long>(20, heartbeat_ms_ - since_beat)));
+    const long n = stream_->read(buf, sizeof(buf), wait_ms);
     if (n > 0) {
       std::vector<Frame> frames;
       parser_.feed(buf, static_cast<size_t>(n), frames);
