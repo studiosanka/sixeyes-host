@@ -4,7 +4,7 @@ Control a [SixEyes](https://github.com/studiosanka/sixeyes) robot arm from your 
 
 This is the library every other SixEyes tool builds on. It also has a **simulated arm**, so you can try everything before your arm is built.
 
-> **Work in progress.** It works against the simulator. It has not been tried on a real arm yet, because the arm's firmware does not speak this protocol yet.
+> **Work in progress.** It works against the simulator. It has not been tried on a real arm yet. The arm's firmware speaks this protocol (it is written and passes its automated checks), but it has not been run against this library on a real arm.
 
 ## Try it in one minute
 
@@ -48,7 +48,7 @@ with Arm("sim") as arm:        # for a real arm use "COM3" (Windows) or "/dev/tt
 | Python library, simulator, bring-up tool | ✅ works, tested on the simulator |
 | TypeScript codec (used by the phone page) | ✅ works, tested |
 | C++ core and session (for ROS 2) | 🚧 written, not compiled or tested yet (CI will) |
-| Real arm | ⬜ firmware does not support this yet |
+| Real arm | ⬜ firmware is written and passes its checks; not yet tried on a real arm |
 
 ## More
 

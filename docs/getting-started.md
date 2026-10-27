@@ -34,7 +34,7 @@ Things that can go wrong give a message that says what to do next, for example *
 
 ## 4. Use a real arm
 
-Not yet possible: the arm's firmware does not speak this protocol yet. When it does:
+The arm's firmware speaks this protocol, but this has not been tried on a real arm yet, so expect rough edges:
 
 1. Plug the Base board in with a USB-C **data** cable.
 2. `sixeyes-bringup ports` shows its port name (like `COM3`).
