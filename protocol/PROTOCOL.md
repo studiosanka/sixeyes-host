@@ -58,7 +58,7 @@ COBS( type u8 | seq u8 | payload | crc16 u16 )  0x00
 - CRC-16/CCITT-FALSE (polynomial 0x1021, start value 0xFFFF) over `type`, `seq` and `payload`. Check value: CRC of the ASCII text `123456789` is `0x29B1`.
 - COBS removes every `0x00` from the data so the trailing `0x00` can mark the end of a frame. A receiver ignores empty frames and drops frames with a bad CRC.
 - Maximum frame: 512 encoded bytes.
-- Over Bluetooth, one frame is carried in one GATT value (see [the appendix](../docs/appendix/appendix-framing.md)).
+- **Bluetooth** uses one GATT service (UUIDs in `messages.yaml`): the phone writes to `rx` (write without response), the arm notifies on `tx`. BLE is treated as a **byte stream**: a frame may be split over several values, in order, so the connection's MTU only changes speed, never correctness. Senders split into chunks of at most 20 bytes; receivers feed every value into the same frame parser as USB. See [the appendix](../docs/appendix/appendix-framing.md).
 
 ## Payloads
 

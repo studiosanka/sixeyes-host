@@ -10,9 +10,9 @@ USB serial is a stream of bytes with no boundaries. A host can start reading in 
 
 ## Same frames over Bluetooth
 
-The phone sends exactly the same frame in a GATT write; the arm notifies state the same way. Over BLE a transport already delivers whole values, so the trailing `0x00` is harmless but not needed.
+The phone writes the same frames to the `rx` characteristic; the arm notifies them on `tx`. UUIDs are in `protocol/messages.yaml`.
 
-The `state` frame is about 62 bytes. The default BLE payload is only 20 bytes, so either the connection negotiates a larger MTU (Android Chrome normally does, but **check this on hardware**) or the firmware sends a shorter state to BLE clients. This is an open question for `FIRMWARE_HANDOFF.md`.
+A GATT value carries at most MTU-3 bytes (20 on a default connection), but a `targets` frame is 30 bytes and a `state` frame about 62. So BLE is treated as a **byte stream**: a sender may split a frame into chunks (up to 20 bytes each) and a receiver feeds every value into the normal frame parser. Order is kept by BLE, so reassembly is free. A larger negotiated MTU only means fewer, faster packets. At 50 Hz, state takes about 4 notifications each, so the firmware may send state to BLE clients at a lower rate (10–20 Hz is plenty for a phone display); this does not affect the USB rate.
 
 ## Floats
 

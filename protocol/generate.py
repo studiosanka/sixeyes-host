@@ -64,6 +64,8 @@ def gen_py(spec):
     o.append(f"JOINT_COUNT = {len(spec['joints'])}")
     for k, v in spec["constants"].items():
         o.append(f"{k.upper()} = {v}")
+    for k, v in spec["ble"].items():
+        o.append(f"BLE_{k.upper()} = {v!r}")
     o.append("")
     for ename, members in spec["enums"].items():
         o += [f"class {camel(ename)}(IntEnum):"] + [f"    {n} = {v}" for n, v in members.items()] + [""]
@@ -117,6 +119,8 @@ def gen_c(spec):
          f"#define {p}JOINT_COUNT {len(spec['joints'])}"]
     for k, v in spec["constants"].items():
         o.append(f"#define {p}{k.upper()} {v}")
+    for k, v in spec["ble"].items():
+        o.append(f'#define {p}BLE_{k.upper()} ' + (f'"{v}"' if isinstance(v, str) else str(v)))
     o.append("")
     for i, j in enumerate(spec["joints"]):
         o.append(f"#define {p}JOINT_{j.upper()} {i}")
@@ -166,6 +170,7 @@ def gen_ts(spec):
     o.append(f"export const JOINTS = {json.dumps(spec['joints'])} as const")
     for k, v in spec["constants"].items():
         o.append(f"export const {k.upper()} = {v}")
+    o.append("export const BLE = { " + ", ".join(f"{camel(k)[0].lower() + camel(k)[1:]}: {json.dumps(v)}" for k, v in spec["ble"].items()) + " } as const")
     o.append("")
     for ename, members in spec["enums"].items():
         o.append(f"export const {camel(ename)} = {{ " + ", ".join(f"{n}: {v}" for n, v in members.items()) + " } as const")

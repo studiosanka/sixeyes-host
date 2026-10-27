@@ -11,6 +11,11 @@ STATE_RATE_HZ_MIN = 50
 STATE_RATE_HZ_MAX = 100
 GRIPPER_MAX = 100
 SLOT_COUNT = 4
+BLE_NAME_PREFIX = 'SixEyes'
+BLE_SERVICE = '6ada6b7d-30c8-4228-bfbe-8cd8cdc8802a'
+BLE_RX = '55c1c73e-13b6-4550-931e-7c97b68d0fe7'
+BLE_TX = '1f8633d2-095c-4f4c-aeb2-3129fc594d6d'
+BLE_CHUNK_BYTES = 20
 
 class HomingState(IntEnum):
     unhomed = 0

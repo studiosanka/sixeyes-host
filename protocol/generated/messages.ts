@@ -8,6 +8,7 @@ export const STATE_RATE_HZ_MIN = 50
 export const STATE_RATE_HZ_MAX = 100
 export const GRIPPER_MAX = 100
 export const SLOT_COUNT = 4
+export const BLE = { namePrefix: "SixEyes", service: "6ada6b7d-30c8-4228-bfbe-8cd8cdc8802a", rx: "55c1c73e-13b6-4550-931e-7c97b68d0fe7", tx: "1f8633d2-095c-4f4c-aeb2-3129fc594d6d", chunkBytes: 20 } as const
 
 export const HomingState = { unhomed: 0, homing: 1, ready: 2, fault: 3 } as const
 export const ControlSource = { ble: 0, usb: 1 } as const
