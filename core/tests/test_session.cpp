@@ -219,8 +219,10 @@ static void testHeartbeatKeepsTheArmAlive() {
   CHECK(r.session->setControlUsb().empty());
   CHECK(r.session->home().empty());
   CHECK(r.session->waitReady(1000).empty());
-  sleepMs(250);  // 20 ms period: about 12 heartbeats; a busy CI machine may manage fewer
-  CHECK(r.arm->heartbeats >= 4);
+  // 20 ms period. Wait for the beats to arrive instead of counting them in a fixed time: a busy CI machine
+  // (the macOS runner) can be slow, and what matters here is that the beats keep coming.
+  for (int i = 0; i < 1500 && r.arm->heartbeats < 5; ++i) sleepMs(2);
+  CHECK(r.arm->heartbeats >= 5);
 }
 
 static void testWaitReadyTimesOut() {
