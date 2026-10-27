@@ -48,13 +48,14 @@ flags:               # bit positions
     homing_failed: 5
 
 # Bluetooth Low Energy. The phone writes frames to `rx` and the arm notifies frames on `tx`.
+# The UUIDs are the ones the firmware uses (53 49 58 45 59 45 53 spells "SIXEYES" in ASCII).
 # BLE is treated as a byte stream: one frame may be split over several values (so the connection's
 # MTU only affects speed, never correctness). Senders split into chunks of at most `chunk_bytes`.
 ble:
   name_prefix: SixEyes
-  service: 6ada6b7d-30c8-4228-bfbe-8cd8cdc8802a
-  rx: 55c1c73e-13b6-4550-931e-7c97b68d0fe7
-  tx: 1f8633d2-095c-4f4c-aeb2-3129fc594d6d
+  service: 53495845-5945-5300-0001-000000000000
+  rx: 53495845-5945-5300-0002-000000000000
+  tx: 53495845-5945-5300-0003-000000000000
   chunk_bytes: 20
 
 constants:
