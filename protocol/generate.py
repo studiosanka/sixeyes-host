@@ -191,10 +191,11 @@ def gen_ts(spec):
         off = 0
         for f in m["fields"]:
             n, sz, suf = f.get("count", 1), TYPES[f["type"]][1], TYPES[f["type"]][3]
+            le = "" if sz == 1 else ", true"  # single bytes have no byte order
             if n > 1:
-                o.append(f"  for (let i = 0; i < {n}; i++) v.set{suf}({off} + i * {sz}, m.{f['name']}[i], true)")
+                o.append(f"  for (let i = 0; i < {n}; i++) v.set{suf}({off} + i * {sz}, m.{f['name']}[i]{le})")
             else:
-                o.append(f"  v.set{suf}({off}, m.{f['name']}, true)")
+                o.append(f"  v.set{suf}({off}, m.{f['name']}{le})")
             off += n * sz
         o += ["  return b", "}"]
         o.append(f"export function decode{cls}(b: Uint8Array): {cls} {{")
@@ -205,10 +206,11 @@ def gen_ts(spec):
         off = 0
         for f in m["fields"]:
             n, sz, suf = f.get("count", 1), TYPES[f["type"]][1], TYPES[f["type"]][3]
+            le = "" if sz == 1 else ", true"
             if n > 1:
-                o.append(f"    {f['name']}: Array.from({{ length: {n} }}, (_, i) => v.get{suf}({off} + i * {sz}, true)),")
+                o.append(f"    {f['name']}: Array.from({{ length: {n} }}, (_, i) => v.get{suf}({off} + i * {sz}{le})),")
             else:
-                o.append(f"    {f['name']}: v.get{suf}({off}, true),")
+                o.append(f"    {f['name']}: v.get{suf}({off}{le}),")
             off += n * sz
         o += ["  }", "}", ""]
     return "\n".join(o) + "\n"

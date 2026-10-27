@@ -43,14 +43,14 @@ export interface SetControlSource {
 export function encodeSetControlSource(m: SetControlSource): Uint8Array {
   const b = new Uint8Array(1)
   const v = new DataView(b.buffer)
-  v.setUint8(0, m.source, true)
+  v.setUint8(0, m.source)
   return b
 }
 export function decodeSetControlSource(b: Uint8Array): SetControlSource {
   if (b.length !== 1) throw new Error('set_control_source: expected 1 bytes, got ' + b.length)
   const v = new DataView(b.buffer, b.byteOffset, b.byteLength)
   return {
-    source: v.getUint8(0, true),
+    source: v.getUint8(0),
   }
 }
 
@@ -131,14 +131,14 @@ export interface SlotPlay {
 export function encodeSlotPlay(m: SlotPlay): Uint8Array {
   const b = new Uint8Array(1)
   const v = new DataView(b.buffer)
-  v.setUint8(0, m.slot, true)
+  v.setUint8(0, m.slot)
   return b
 }
 export function decodeSlotPlay(b: Uint8Array): SlotPlay {
   if (b.length !== 1) throw new Error('slot_play: expected 1 bytes, got ' + b.length)
   const v = new DataView(b.buffer, b.byteOffset, b.byteLength)
   return {
-    slot: v.getUint8(0, true),
+    slot: v.getUint8(0),
   }
 }
 
@@ -149,14 +149,14 @@ export interface SlotErase {
 export function encodeSlotErase(m: SlotErase): Uint8Array {
   const b = new Uint8Array(1)
   const v = new DataView(b.buffer)
-  v.setUint8(0, m.slot, true)
+  v.setUint8(0, m.slot)
   return b
 }
 export function decodeSlotErase(b: Uint8Array): SlotErase {
   if (b.length !== 1) throw new Error('slot_erase: expected 1 bytes, got ' + b.length)
   const v = new DataView(b.buffer, b.byteOffset, b.byteLength)
   return {
-    slot: v.getUint8(0, true),
+    slot: v.getUint8(0),
   }
 }
 
@@ -170,7 +170,7 @@ export interface SlotWrite {
 export function encodeSlotWrite(m: SlotWrite): Uint8Array {
   const b = new Uint8Array(29)
   const v = new DataView(b.buffer)
-  v.setUint8(0, m.slot, true)
+  v.setUint8(0, m.slot)
   v.setUint16(1, m.index, true)
   v.setUint16(3, m.dt_ms, true)
   for (let i = 0; i < 6; i++) v.setFloat32(5 + i * 4, m.joints[i], true)
@@ -180,7 +180,7 @@ export function decodeSlotWrite(b: Uint8Array): SlotWrite {
   if (b.length !== 29) throw new Error('slot_write: expected 29 bytes, got ' + b.length)
   const v = new DataView(b.buffer, b.byteOffset, b.byteLength)
   return {
-    slot: v.getUint8(0, true),
+    slot: v.getUint8(0),
     index: v.getUint16(1, true),
     dt_ms: v.getUint16(3, true),
     joints: Array.from({ length: 6 }, (_, i) => v.getFloat32(5 + i * 4, true)),
@@ -199,9 +199,9 @@ export function encodeHelloAck(m: HelloAck): Uint8Array {
   const b = new Uint8Array(7)
   const v = new DataView(b.buffer)
   v.setUint16(0, m.protocol_version, true)
-  v.setUint8(2, m.fw_major, true)
-  v.setUint8(3, m.fw_minor, true)
-  v.setUint8(4, m.fw_patch, true)
+  v.setUint8(2, m.fw_major)
+  v.setUint8(3, m.fw_minor)
+  v.setUint8(4, m.fw_patch)
   v.setUint16(5, m.capabilities, true)
   return b
 }
@@ -210,9 +210,9 @@ export function decodeHelloAck(b: Uint8Array): HelloAck {
   const v = new DataView(b.buffer, b.byteOffset, b.byteLength)
   return {
     protocol_version: v.getUint16(0, true),
-    fw_major: v.getUint8(2, true),
-    fw_minor: v.getUint8(3, true),
-    fw_patch: v.getUint8(4, true),
+    fw_major: v.getUint8(2),
+    fw_minor: v.getUint8(3),
+    fw_patch: v.getUint8(4),
     capabilities: v.getUint16(5, true),
   }
 }
@@ -230,8 +230,8 @@ export function encodeState(m: State): Uint8Array {
   const b = new Uint8Array(56)
   const v = new DataView(b.buffer)
   v.setUint32(0, m.t_ms, true)
-  v.setUint8(4, m.homing_state, true)
-  v.setUint8(5, m.control_source, true)
+  v.setUint8(4, m.homing_state)
+  v.setUint8(5, m.control_source)
   v.setUint16(6, m.faults, true)
   for (let i = 0; i < 6; i++) v.setFloat32(8 + i * 4, m.measured[i], true)
   for (let i = 0; i < 6; i++) v.setFloat32(32 + i * 4, m.target[i], true)
@@ -242,8 +242,8 @@ export function decodeState(b: Uint8Array): State {
   const v = new DataView(b.buffer, b.byteOffset, b.byteLength)
   return {
     t_ms: v.getUint32(0, true),
-    homing_state: v.getUint8(4, true),
-    control_source: v.getUint8(5, true),
+    homing_state: v.getUint8(4),
+    control_source: v.getUint8(5),
     faults: v.getUint16(6, true),
     measured: Array.from({ length: 6 }, (_, i) => v.getFloat32(8 + i * 4, true)),
     target: Array.from({ length: 6 }, (_, i) => v.getFloat32(32 + i * 4, true)),
@@ -259,18 +259,18 @@ export interface Ack {
 export function encodeAck(m: Ack): Uint8Array {
   const b = new Uint8Array(3)
   const v = new DataView(b.buffer)
-  v.setUint8(0, m.ref_type, true)
-  v.setUint8(1, m.ref_seq, true)
-  v.setUint8(2, m.status, true)
+  v.setUint8(0, m.ref_type)
+  v.setUint8(1, m.ref_seq)
+  v.setUint8(2, m.status)
   return b
 }
 export function decodeAck(b: Uint8Array): Ack {
   if (b.length !== 3) throw new Error('ack: expected 3 bytes, got ' + b.length)
   const v = new DataView(b.buffer, b.byteOffset, b.byteLength)
   return {
-    ref_type: v.getUint8(0, true),
-    ref_seq: v.getUint8(1, true),
-    status: v.getUint8(2, true),
+    ref_type: v.getUint8(0),
+    ref_seq: v.getUint8(1),
+    status: v.getUint8(2),
   }
 }
 
