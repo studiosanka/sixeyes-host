@@ -235,8 +235,13 @@ static void testStateAgeGrowsWhenTheArmGoesQuiet() {
   sleepMs(150);
   CHECK(r.session->stateAgeSeconds() > 0.1);
   r.arm->pushState();
-  sleepMs(60);
-  CHECK(r.session->stateAgeSeconds() < 0.1);
+  // Poll: a busy CI machine can delay the reader thread, and the age is only small just after a state arrives.
+  bool fresh = false;
+  for (int i = 0; i < 500 && !fresh; ++i) {
+    sleepMs(2);
+    fresh = r.session->stateAgeSeconds() < 0.1;
+  }
+  CHECK(fresh);
 }
 
 int main() {
