@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sixeyes-host"
+version = "0.0.1"
+description = "Talk to a SixEyes robot arm over USB, plus a simulator and a bring-up tool."
+readme = "README.md"
+license = { text = "Apache-2.0" }
+requires-python = ">=3.9"
+dependencies = ["pyserial>=3.5"]
+
+[project.scripts]
+sixeyes-bringup = "sixeyes_host.cli:main"
+sixeyes-sim = "sixeyes_host.cli:sim_main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

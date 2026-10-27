@@ -1,0 +1,136 @@
+# SixEyes host protocol: the single source of truth.
+# Edit this file, then run `python protocol/generate.py`. Never hand-edit protocol/generated/.
+# Explanation for humans: protocol/PROTOCOL.md
+
+protocol_version: 1
+
+# Frame = COBS( type u8 | seq u8 | payload | crc16 u16 ) followed by a 0x00 delimiter.
+# CRC-16/CCITT-FALSE (poly 0x1021, init 0xFFFF) over type, seq and payload. All integers little-endian.
+# Floats are IEEE-754 binary32 little-endian.
+crc: { poly: 0x1021, init: 0xFFFF, check_of_123456789: 0x29B1 }
+
+# The 6 values every targets/state message carries, in this order.
+# Joints 0-4 are radians at the output shaft. Joint 5 (gripper) is 0..100.
+joints: [base, shoulder, elbow, wrist_pitch, wrist_roll, gripper]
+
+enums:
+  homing_state:
+    unhomed: 0
+    homing: 1
+    ready: 2
+    fault: 3
+  control_source:
+    ble: 0
+    usb: 1
+  status:            # result code carried by ACK (0 = ok)
+    ok: 0
+    bad_version: 1
+    not_homed: 2
+    not_in_control: 3
+    bad_args: 4
+    faulted: 5
+    unsupported: 6
+    busy: 7
+
+flags:               # bit positions
+  capabilities:
+    homing: 0
+    ble: 1
+    echo_targets: 2
+    motion_slots: 3
+    hw_estop: 4
+  faults:
+    hw_estop: 0
+    watchdog: 1
+    joint_limit: 2
+    stall: 3
+    bus_lost: 4
+    homing_failed: 5
+
+constants:
+  watchdog_ms: 200
+  state_rate_hz_min: 50
+  state_rate_hz_max: 100
+  gripper_max: 100
+  slot_count: 4
+
+# Host -> arm have type 0x01..0x7F, arm -> host 0x80..0xFF.
+messages:
+  hello:
+    id: 0x01
+    doc: First message after connecting. Tells the arm which protocol the host speaks.
+    fields:
+      - { name: protocol_version, type: u16 }
+  set_control_source:
+    id: 0x02
+    doc: Choose who may move the arm (ble or usb). Refused while the arm is moving.
+    fields:
+      - { name: source, type: u8, enum: control_source }
+  home:
+    id: 0x03
+    doc: Start homing. Only accepted from the source in control.
+    fields: []
+  targets:
+    id: 0x04
+    doc: Joint targets. Counts as a heartbeat for the watchdog.
+    fields:
+      - { name: joints, type: f32, count: 6 }
+  stop:
+    id: 0x05
+    doc: Software e-stop. Hold position now. Accepted from either source, always.
+    fields: []
+  clear_fault:
+    id: 0x06
+    doc: Clear a fault. The arm goes back to unhomed and must be homed again.
+    fields: []
+  heartbeat:
+    id: 0x07
+    doc: Keeps the watchdog fed while no targets are being sent.
+    fields: []
+  slot_play:
+    id: 0x08
+    doc: (draft, needs capability motion_slots) Play a motion stored on the arm.
+    fields:
+      - { name: slot, type: u8 }
+  slot_erase:
+    id: 0x09
+    doc: (draft, needs capability motion_slots) Erase a stored motion.
+    fields:
+      - { name: slot, type: u8 }
+  slot_write:
+    id: 0x0A
+    doc: (draft, needs capability motion_slots) Write one sample of a stored motion.
+    fields:
+      - { name: slot, type: u8 }
+      - { name: index, type: u16 }
+      - { name: dt_ms, type: u16 }
+      - { name: joints, type: f32, count: 6 }
+
+  hello_ack:
+    id: 0x80
+    doc: Reply to hello. Carries the arm's protocol and firmware versions and what it can do.
+    fields:
+      - { name: protocol_version, type: u16 }
+      - { name: fw_major, type: u8 }
+      - { name: fw_minor, type: u8 }
+      - { name: fw_patch, type: u8 }
+      - { name: capabilities, type: u16, flags: capabilities }
+  state:
+    id: 0x81
+    doc: >
+      Streamed 50-100 times a second. measured = what the encoders say.
+      target = the last target accepted from the source in control (this is the "echo" Mode 2 records).
+    fields:
+      - { name: t_ms, type: u32 }
+      - { name: homing_state, type: u8, enum: homing_state }
+      - { name: control_source, type: u8, enum: control_source }
+      - { name: faults, type: u16, flags: faults }
+      - { name: measured, type: f32, count: 6 }
+      - { name: target, type: f32, count: 6 }
+  ack:
+    id: 0x82
+    doc: Answer to every command. status 0 means done, anything else says why not.
+    fields:
+      - { name: ref_type, type: u8 }
+      - { name: ref_seq, type: u8 }
+      - { name: status, type: u8, enum: status }
